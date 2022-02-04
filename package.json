@@ -18,6 +18,7 @@
     "@web3-react/core": "latest",
     "@web3-react/injected-connector": "latest",
     "@web3-react/walletconnect-connector": "latest",
+    "bnc-onboard": "^1.37.2",
     "bootstrap": "^5.1.1",
     "ethers": "^5.5.1",
     "firebase": "^9.6.4",

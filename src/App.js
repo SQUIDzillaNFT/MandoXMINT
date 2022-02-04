@@ -1,60 +1,94 @@
 import './App.css';
 import 'font-awesome/css/font-awesome.min.css';
-// import './styles/w3.css';
 import logo from './images/logo.png';
-import imgMetamask from './images/metamask-logo.svg';
-import imgWalletConnect from './images/walletconnect.svg';
 import React, { useState, useEffect } from "react";
-import {
-  Button
-} from "reactstrap";
 
-import { Modal } from "react-bootstrap";
 import axios from 'axios';
 
-import { useWeb3React, Web3ReactProvider } from '@web3-react/core';
-import { getLibrary, connectorsByName, resetWalletConnector } from './utils/web3React';
 import LaceContract from './contract/Lacedameon.json';
-import { useContract, useContractCallData } from "./utils/hooks";
 import { ethers, utils } from "ethers";
 import Countdown from "react-countdown";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Web3 from 'web3';
+import { initOnboard } from "./utils/walletService"
 
 function App() {
   return (
-    <Web3ReactProvider getLibrary={getLibrary}>
+    <>
       <MainComponent />
       <ToastContainer autoClose={5000} hideProgressBar />
-    </Web3ReactProvider>
+    </>
   )
 }
 
 function MainComponent() {
-  const [walletConnectionModalShow, setWalletConnectionModalShow] = useState(false);
-  const [installMetamaskModalShow, setInstallMetamaskModalShow] = useState(false);
   const [walletAddr, setWalletAddr] = useState("");
-  const { account, library, activate, deactivate, active, chainId } = useWeb3React();
-  const [currentConnectorName, setCurrentConnectorName] = useState(null);
 
   // mandox
   const [isStarted, setIsStarted] = useState(false);
   const [statusShow, setStatusShow] = useState(false);
   const [mintCount, setMintCount] = useState(1);
   const [mintFlag, setMintFlag] = useState(false);
+  const [onboard, setOnboard] = useState();
+  const [walletConnected, setWalletConnected] = useState(false);
+  const [web3, setWeb3] = useState(null);
+  const [walletAddress, setWalletAddress] = useState(null);
+  useEffect(() => {
+    const _onboard = initOnboard({
+      address: (address) => {
+        console.log('address callback: ', address);
+        setWalletAddress(address);
+        if (!!address) {
+          setWalletAddr(
+            shortenHex(address)
+          );
+        } else {
+          setWalletConnected(false);
+        }
+      },
+      network: (network) => {
+        console.log('network callback: ', network)
+      },
+      balance: (balance) => {
+        console.log('balance', balance);
+      },
+      wallet: async (wallet) => {
+        console.log('wallet', wallet);
+        if (wallet.provider) {
+          let ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
+          let _nftContract = new ethers.Contract(LaceContract.networks[1].address, LaceContract.abi, ethersProvider.getUncheckedSigner());
+          setContract(_nftContract);
+          let _totalSupply = await _nftContract.totalSupply();
+          setTotalSupply(Number(_totalSupply));
+          let _maxTokenNumber = await _nftContract.MAX_ELEMENTS();
+          setMaxTokenNumber(Number(_maxTokenNumber));
+          setStatusShow(true);
+        }
+      }
+    })
 
-  const connectWallet = () => {
-    setWalletConnectionModalShow(true);
+    setOnboard(_onboard)
+  }, [])
+
+  const connectWallet = async () => {
+    if (onboard) {
+      const walletSelected = await onboard.walletSelect()
+      if (!walletSelected) return
+
+      console.log('wallet selected: ', walletSelected)
+      const readyToTransact = await onboard.walletCheck()
+      console.log('Wallet selected: ', walletSelected, ' Ready to transact: ', readyToTransact)
+      if (walletSelected && readyToTransact) {
+        setWalletConnected(true);
+      }
+    }
   };
 
-  useEffect(() => {
-    const connectorId = window.localStorage.getItem('currentConnector');
-    if (connectorId) {
-      activate(connectorsByName[connectorId]);
-      setCurrentConnectorName(connectorId);
+  const disconnectWallet = async () => {
+    if (onboard) {
+      onboard.walletReset();
     }
-  }, [])
+  }
 
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
     if (completed) {
@@ -85,46 +119,9 @@ function MainComponent() {
     )}`;
   }
 
-  useEffect(() => {
-    let walletAddress = "";
-    if (account !== undefined) {
-      walletAddress = account
-      setWalletAddr(
-        shortenHex(walletAddress)
-      );
-    }
-    else walletAddress = ""
-  }, [account]);
-
   const [contract, setContract] = useState(null);
   const [maxTokenNumber, setMaxTokenNumber] = useState(0);
   const [totalSupply, setTotalSupply] = useState(0);
-
-  useEffect(() => {
-    if (chainId && LaceContract.networks && LaceContract.networks[chainId]) {
-      async function loadData() {
-        if (!!(library && account) && currentConnectorName) {
-          window.localStorage.setItem('currentConnector', currentConnectorName);
-          const signer = library.getSigner(account).connectUnchecked();
-          let nftcontract = new ethers.Contract(LaceContract.networks[chainId].address, LaceContract.abi, signer);
-          if (nftcontract) {
-            setContract(nftcontract);
-            try {
-              let _maxTokenNumber = await nftcontract.MAX_ELEMENTS();
-              setMaxTokenNumber(Number(_maxTokenNumber));
-              let _totalSupply = await nftcontract.totalSupply();
-              setTotalSupply(Number(_totalSupply));
-              setStatusShow(true);
-            } catch (ex) {
-              console.log(`failed call contract method MAX_ELEMENT: `, ex)
-            }
-          }
-        }
-      }
-      loadData();
-    }
-  }, [library, account, chainId])
-
 
   async function estimateGas() {
     let responseValue;
@@ -138,37 +135,9 @@ function MainComponent() {
     return responseValue;
   }
 
-  const connectMetamask = () => {
-    if (typeof window.web3 !== 'undefined') {
-      window.web3 = new Web3(window.ethereum);
-
-    } else {
-      setInstallMetamaskModalShow(true);
-      return;
-    }
-    setWalletConnectionModalShow(false);
-    window.ethereum.enable()
-      .then(function (accounts) {
-        window.web3.eth.net.getNetworkType()
-          // checks if connected network is mainnet (change this to rinkeby if you wanna test on testnet)
-          .then((network) => {
-            console.log(network);
-            if (network !== "rinkeby") {
-              toast.error("You are on " + network + " network. Change network to Ethereum Mainnet or you won't be able to do anything here");
-            } else {
-              activate(connectorsByName["Injected"]);
-              setCurrentConnectorName("Injected");
-            }
-          });
-      })
-      .catch(function (error) {
-        // Handle error. Likely the user rejected the login
-        console.error(error)
-      })
-  }
-
   const mint = async (numberofTokens) => {
     if (contract) {
+      console.log('contract', contract);
       let _totalSupply = await contract.totalSupply();
       setTotalSupply(Number(_totalSupply));
       const privateSale = await contract.privateSaleIsActive();
@@ -179,15 +148,14 @@ function MainComponent() {
         mintPrice = await contract.publicMintPrice();
       }
       const price = Number(mintPrice) * numberofTokens;
+      setStatusShow(true);
       try {
         setMintFlag(true);
         let gas = 70;
         await estimateGas().then(function (res) {
           gas = res;
         });
-
-
-        await contract.mint(numberofTokens, { from: account, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
+        await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
           console.log(result);
           setTotalSupply(totalSupply + numberofTokens);
           setMintCount(1);
@@ -196,6 +164,7 @@ function MainComponent() {
 
       } catch (err) {
         setMintFlag(false);
+        console.log('error minting:', err);
         if (err.constructor !== Object) {
           if (String(err).includes('"code":-32000')) {
             toast.error('Error: insufficient funds for intrinsic transaction cost');
@@ -229,7 +198,7 @@ function MainComponent() {
               {
                 !isStarted && (
                   <div className="mt-5">
-                    <Countdown date={new Date("2022-01-26 12:00:00 CST")} renderer={renderer} />
+                    <Countdown date={new Date("2022-02-03T17:00:00+0000")} renderer={renderer} />
                   </div>
                 )
               }
@@ -254,18 +223,19 @@ function MainComponent() {
                 )
               }
               {
-                isStarted && !!(library && account) && (
+                isStarted && walletConnected && (
                   <>
-                    <h5 className="mt-5">Connected Wallet: {walletAddr}</h5>
                     <div className="btn-wrapper mt-3">
                       <div className="btn-shadow"></div>
-                      <a className="btn btn-primary btn-bold btn-connect" onClick={() => mint(mintCount)} disabled={mintFlag}>{mintFlag ? <i class="fa fa-spinner fa-spin"></i> : 'MINT'}</a>
+                      <a className="btn btn-primary btn-bold btn-connect" onClick={() => mint(mintCount)} disabled={mintFlag}>{mintFlag ? <i className="fa fa-spinner fa-spin"></i> : 'MINT'}</a>
                     </div>
+                    <h5 className="mt-1">Connected Wallet: {walletAddr}</h5>
+                    <a className="btn btn-primary btn-bold btn-disconnect mt-1" onClick={() => disconnectWallet()} >DISCONNECT</a>
                   </>
                 )
               }
               {
-                isStarted && !(library && account) && (
+                isStarted && !walletConnected && (
                   <>
                     <h5 className="mt-5">Connect to the Ethereum network</h5>
                     <div className="btn-wrapper mt-3">
@@ -276,73 +246,14 @@ function MainComponent() {
                 )
               }
 
-
             </div>
           </div>
         </div>
         <div className="mint-footer">
-          <h6>Make sure you are connected to right network! (Ethereum) Please note: All Mintings are Final Sales</h6>
-          <h6>Gas limit is preset to 28500, Any Lower and you Risk loss of gas with a Failed transactions.</h6>
+          <h6>Make sure you are connected to right network! (Ethereum) Please note: All Minting Sales are FINAL!</h6>
+          <h6>Gas limit is preset to 28500, Any Lower and you Risk loss of Gas Fee with a Failed transaction.</h6>
         </div>
       </div>
-
-      {/* WalletConnection Modal */}
-      <Modal
-        className="wallet-connection"
-        show={walletConnectionModalShow}
-        onHide={() => setWalletConnectionModalShow(false)}
-      >
-        <Modal.Header>
-          <Modal.Title>CONNECT TO A WALLET</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Button
-            className="metamask-btn"
-            variant="primary"
-            onClick={() => {
-              if (!window.ethereum) {
-                setWalletConnectionModalShow(false);
-                setInstallMetamaskModalShow(true);
-              } else {
-                connectMetamask();
-
-              }
-            }}
-          >
-            <img src={imgMetamask} alt="" />
-            METAMASK
-          </Button>
-          <Button
-            className="walletconnection-btn"
-            variant="primary"
-            onClick={() => {
-              resetWalletConnector(connectorsByName["WalletConnect"]);
-              activate(connectorsByName["WalletConnect"]);
-              setCurrentConnectorName("WalletConnect");
-              setWalletConnectionModalShow(false);
-            }}
-          >
-            <img src={imgWalletConnect} alt="" />
-            WALLET CONNECT
-          </Button>
-        </Modal.Body>
-      </Modal>
-      {/* Install Metamask Modal */}
-      <Modal
-        className="info-modal"
-        show={installMetamaskModalShow}
-        onHide={() => setInstallMetamaskModalShow(false)}
-      >
-        <Modal.Header>
-          <Modal.Title>Information</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p className="text-center">
-            Please install metamask extension on your browser.
-          </p>
-          <a href="https://metamask.io/download/" target="_blank">Open Metamask</a>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }

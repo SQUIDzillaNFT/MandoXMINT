@@ -90,6 +90,11 @@ body, html {height: 100%}
   background-color: black;
 }
 
+.btn-disconnect:hover {
+  background-color: black;
+  border: 1px solid white;
+}
+
 .mint-container {
   max-width: 1920px;
 }
@@ -144,6 +149,18 @@ body, html {height: 100%}
   color: #fff;
   position: relative;
   cursor: pointer;
+}
+
+.btn-disconnect {
+  color: white;
+  background-color: black;
+  border: 1px solid white;
+  line-height: 1.275rem;
+  border-radius: 999px;
+  padding: 0.725rem 1.75rem;
+  /* position: absolute; */
+  /* top: 50px; */
+  /* right: calc(100vw/10); */
 }
 
 .product {
@@ -264,7 +281,23 @@ input:disabled{
   color: #f70099;
 }
 
-.modal-dialog .modal-content .modal-body button, a {
+.modal-dialog .modal-content .modal-body button {
+  border-radius: 40px;
+  width: 200px;
+  height: 45px;
+  margin: 10px 5px;
+  border: 1.5px solid #d4d4dc;
+  font-size: 13px;
+  padding: 10px 17px;
+  background: #0a0a0a;
+  color: #f70099;
+  /* display: flex; */
+  justify-content: flex-start;
+  align-items: center;
+  text-decoration: none;
+}
+
+.modal-dialog .modal-content .modal-body button a {
   border-radius: 40px;
   width: 200px;
   height: 45px;
