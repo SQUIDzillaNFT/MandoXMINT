@@ -251,7 +251,7 @@ function MainComponent() {
         </div>
         <div className="mint-footer">
           <h6>Make sure you are connected to right network! (Ethereum) Please note: All Minting Sales are FINAL!</h6>
-          <h6>Gas limit is preset to 28500, Any Lower and you Risk loss of Gas Fee with a Failed transaction.</h6>
+          <h6 className="min-footer">Gas limit is preset to 28500, Any Lower and you Risk loss of Gas Fee with a Failed transaction.</h6>
         </div>
       </div>
     </div>

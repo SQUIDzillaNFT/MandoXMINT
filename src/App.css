@@ -320,6 +320,17 @@ input:disabled{
   margin-right: 12px;
 }
 
+@media (max-width: 375px) {
+  .min-footer {
+    display: none;
+  }
+}
+
+@media (max-width: 320px) {
+  .mint-footer {
+    display: none;
+  }
+}
 /* @media (max-height: 768px) {
   .logo-icon {
     height: 120px;
