@@ -120,7 +120,7 @@ function MainComponent() {
   }
 
   const [contract, setContract] = useState(null);
-  const [maxTokenNumber, setMaxTokenNumber] = useState(0);
+  const [maxTokenNumber, setMaxTokenNumber] = useState(1000);
   const [totalSupply, setTotalSupply] = useState(0);
 
   async function estimateGas() {
@@ -155,7 +155,8 @@ function MainComponent() {
         await estimateGas().then(function (res) {
           gas = res;
         });
-        await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
+        await contract.mint(numberofTokens, { from: walletAddress, value: String(price) }).then((result) => {
+        // await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
           console.log(result);
           setTotalSupply(totalSupply + numberofTokens);
           setMintCount(1);
@@ -194,8 +195,10 @@ function MainComponent() {
         <div className="mint-section container">
           <div className="row">
             <div className="col-md-12 mt-5">
-
-              {
+              {/* TEMP SECTION START */}
+              <h3>Minting Finished!<br/>Buy Your Lacedameon on <a href="https://opensea.io" target="_blank">Opensea.io</a></h3>
+              {/* TEMP SECTION END */}
+              {/* {
                 !isStarted && (
                   <div className="mt-5">
                     <Countdown date={new Date("2022-02-03T17:00:00+0000")} renderer={renderer} />
@@ -207,7 +210,7 @@ function MainComponent() {
                 <h3>MINTED LACEDAMEON: {totalSupply}/{maxTokenNumber}</h3>
               }
               <h5 className={`black ${isStarted ? "mt-2" : "mt-5"}`}>
-                1 LDMN costs 0.075 ETH <br />
+                1 LDMN costs 0.08 ETH <br />
                 Excluding gas fees.
               </h5>
               {
@@ -244,7 +247,7 @@ function MainComponent() {
                     </div>
                   </>
                 )
-              }
+              } */}
 
             </div>
           </div>
