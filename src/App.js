@@ -1,11 +1,17 @@
 import './App.css';
 import 'font-awesome/css/font-awesome.min.css';
-import logo from './images/logo.png';
+import logo from './images/Cyborx Logo.png';
+import videoSrc from './images/Cyborx Background.mp4';
+import cyborx from "./images/Full Cyborx.png";
+import connectWalletImg from "./images/Connect Wallet.png"
+import disconnectWalletImg from "./images/Disconnect.png"
+import mintImg from "./images/Mint.png"
+import whiteListImg from "./images/Whitelist Sale.png"
 import React, { useState, useEffect } from "react";
 
 import axios from 'axios';
 
-import LaceContract from './contract/Lacedameon.json';
+import CyborxContract from './contract/CyborxContract.json';
 import { ethers, utils } from "ethers";
 import Countdown from "react-countdown";
 import { toast, ToastContainer } from "react-toastify";
@@ -56,7 +62,7 @@ function MainComponent() {
         console.log('wallet', wallet);
         if (wallet.provider) {
           let ethersProvider = new ethers.providers.Web3Provider(wallet.provider);
-          let _nftContract = new ethers.Contract(LaceContract.networks[1].address, LaceContract.abi, ethersProvider.getUncheckedSigner());
+          let _nftContract = new ethers.Contract(CyborxContract.networks[1].address, CyborxContract.abi, ethersProvider.getUncheckedSigner());
           setContract(_nftContract);
           let _totalSupply = await _nftContract.totalSupply();
           setTotalSupply(Number(_totalSupply));
@@ -91,6 +97,7 @@ function MainComponent() {
   }
 
   const renderer = ({ days, hours, minutes, seconds, completed }) => {
+    console.log('completed', completed);
     if (completed) {
       // Render a complete state
       setIsStarted(true);
@@ -103,11 +110,11 @@ function MainComponent() {
       // Render a countdown
       return (
         <div className="count-down">
-          WHITELIST SALE BEGINS IN<br />
+          <img className="whitelist-img" src={whiteListImg} /> <br/>
           {days > 0 ? (<span className="count-box">{days}d</span>) : ''}
-          <span className="count-box">{hours}</span>h
-          <span className="count-box">{minutes}</span>m
-          <span className="count-box">{seconds}</span>s <br />
+          <span className="count-box">{hours}h</span>
+          <span className="count-box">{minutes}m</span>
+          <span className="count-box">{seconds}s</span> <br />
         </div>
       );
     }
@@ -156,7 +163,7 @@ function MainComponent() {
           gas = res;
         });
         await contract.mint(numberofTokens, { from: walletAddress, value: String(price) }).then((result) => {
-        // await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
+          // await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
           console.log(result);
           setTotalSupply(totalSupply + numberofTokens);
           setMintCount(1);
@@ -188,74 +195,56 @@ function MainComponent() {
 
   return (
     <div className="App">
-      <div className="mint-page">
-        <div>
-          <img className="logo-icon" src={logo} />
-        </div>
-        <div className="mint-section container">
-          <div className="row">
-            <div className="col-md-12 mt-5">
-              {/* TEMP SECTION START */}
-              <h3>Minting Finished!<br/>Buy Your Lacedameon on <a href="https://opensea.io" target="_blank">Opensea.io</a></h3>
-              {/* TEMP SECTION END */}
-              {/* {
-                !isStarted && (
-                  <div className="mt-5">
-                    <Countdown date={new Date("2022-02-03T17:00:00+0000")} renderer={renderer} />
-                  </div>
-                )
-              }
-              {
-                isStarted && statusShow &&
-                <h3>MINTED LACEDAMEON: {totalSupply}/{maxTokenNumber}</h3>
-              }
-              <h5 className={`black ${isStarted ? "mt-2" : "mt-5"}`}>
-                1 LDMN costs 0.08 ETH <br />
-                Excluding gas fees.
-              </h5>
-              {
-                isStarted && (
-                  <div>
-                    <div className="qty mt-3">
-                      <h4>Quantity:</h4>
-                      <span className="minus bg-dark" onClick={(e) => setMintCount(mintCount > 1 ? mintCount - 1 : 1)}>-</span>
-                      <input type="number" className="count" name="qty" value={mintCount} disabled />
-                      <span className="plus bg-dark" onClick={(e) => setMintCount(mintCount < 5 ? mintCount + 1 : 5)}>+</span>
-                    </div>
-                  </div>
-                )
-              }
-              {
-                isStarted && walletConnected && (
-                  <>
-                    <div className="btn-wrapper mt-3">
-                      <div className="btn-shadow"></div>
-                      <a className="btn btn-primary btn-bold btn-connect" onClick={() => mint(mintCount)} disabled={mintFlag}>{mintFlag ? <i className="fa fa-spinner fa-spin"></i> : 'MINT'}</a>
-                    </div>
-                    <h5 className="mt-1">Connected Wallet: {walletAddr}</h5>
-                    <a className="btn btn-primary btn-bold btn-disconnect mt-1" onClick={() => disconnectWallet()} >DISCONNECT</a>
-                  </>
-                )
-              }
-              {
-                isStarted && !walletConnected && (
-                  <>
-                    <h5 className="mt-5">Connect to the Ethereum network</h5>
-                    <div className="btn-wrapper mt-3">
-                      <div className="btn-shadow"></div>
-                      <a className="btn btn-primary btn-bold btn-connect" onClick={() => connectWallet()}>Connect Wallet</a>
-                    </div>
-                  </>
-                )
-              } */}
-
+      <div>
+        <video autoPlay muted loop id="myVideo">
+          <source src={videoSrc} type="video/mp4" />
+        </video>
+      </div>
+      <div className="mint-section">
+        <img className="logo-img" src={logo} />
+      </div>
+      <div className="cyborx">
+        <img className="cyborx-img" src={cyborx} />
+      </div>
+      <div className={`main-section ` + (walletConnected ? "connected" : " ")}>
+        {
+          !isStarted && (
+            <div className="count-down">
+              <Countdown className="mt-5" date={new Date("2022-02-03T17:00:00+0000")} renderer={renderer} />
             </div>
-          </div>
-        </div>
-        <div className="mint-footer">
-          <h6>Make sure you are connected to right network! (Ethereum) Please note: All Minting Sales are FINAL!</h6>
-          <h6 className="min-footer">Gas limit is preset to 28500, Any Lower and you Risk loss of Gas Fee with a Failed transaction.</h6>
-        </div>
+          )
+        }
+        {
+          isStarted && !walletConnected && (
+            <>
+                <a className="btn btn-connect" onClick={() => connectWallet()}><img src={connectWalletImg} /></a>
+                {/*<a className="btn btn-black btn-connect" onClick={() => connectWallet()}><img src={connectWalletImg} /></a>*/}
+            </>
+          )
+        }
+        {
+          isStarted && walletConnected && (
+            <>
+              <div>
+                <div className="qty">
+                  <span className="minus bg-dark" onClick={(e) => setMintCount(mintCount > 1 ? mintCount - 1 : 1)}>-</span>
+                  <input type="number" className="count" name="qty" value={mintCount} disabled />
+                  <span className="plus bg-dark" onClick={(e) => setMintCount(mintCount < 10 ? mintCount + 1 : 10)}>+</span>
+                </div>
+              </div>
+              <div className="mt-3">
+                <a className="btn btn-connect" onClick={() => mint(mintCount)} disabled={mintFlag}>{mintFlag ? <i className="fa fa-spinner fa-spin"></i> : <img style={{ width: 120 }} src={mintImg} />}</a>
+                {/*<a className="btn btn-black btn-connect" onClick={() => connectWallet()}><img src={mintImg} /></a>*/}
+              </div>
+              <a className="btn btn-connect btn-disconnect" onClick={() => disconnectWallet()} ><img src={disconnectWalletImg} /></a>
+              {/*<a className="btn btn-black btn-connect" style={{ marginTop: "150px" }} onClick={() => connectWallet()}><img src={disconnectWalletImg} /></a>*/}
+            </>
+          )
+        }
+      </div>
+
+      <div className="content">
+        <h5>Make sure you are connected to right network(ETHEREUM)<br/> PLEASE NOTE: ALL Minting Sales are FINAL!</h5>
       </div>
     </div>
   );
