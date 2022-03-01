@@ -375,7 +375,7 @@ input:disabled{
   }
 }
 
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1280px) {
   #myVideo {
     position: absolute;
     top: 0;
