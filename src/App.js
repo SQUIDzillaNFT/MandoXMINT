@@ -110,7 +110,7 @@ function MainComponent() {
       // Render a countdown
       return (
         <div className="count-down">
-          <img className="whitelist-img" src={whiteListImg} /> <br/>
+          <img style={{ width: 380 }} className="whitelist-img" src={whiteListImg} /> <br/>
           {days > 0 ? (<span className="count-box">{days}d</span>) : ''}
           <span className="count-box">{hours}h</span>
           <span className="count-box">{minutes}m</span>
@@ -210,7 +210,7 @@ function MainComponent() {
         {
           !isStarted && (
             <div className="count-down">
-              <Countdown className="mt-5" date={new Date("2022-02-03T17:00:00+0000")} renderer={renderer} />
+              <Countdown className="mt-5" date={new Date("2022-03-07T17:00:00+0000")} renderer={renderer} />
             </div>
           )
         }
@@ -218,7 +218,6 @@ function MainComponent() {
           isStarted && !walletConnected && (
             <>
                 <a className="btn btn-connect" onClick={() => connectWallet()}><img src={connectWalletImg} /></a>
-                {/*<a className="btn btn-black btn-connect" onClick={() => connectWallet()}><img src={connectWalletImg} /></a>*/}
             </>
           )
         }
@@ -234,10 +233,8 @@ function MainComponent() {
               </div>
               <div className="mt-3">
                 <a className="btn btn-connect" onClick={() => mint(mintCount)} disabled={mintFlag}>{mintFlag ? <i className="fa fa-spinner fa-spin"></i> : <img style={{ width: 120 }} src={mintImg} />}</a>
-                {/*<a className="btn btn-black btn-connect" onClick={() => connectWallet()}><img src={mintImg} /></a>*/}
               </div>
               <a className="btn btn-connect btn-disconnect" onClick={() => disconnectWallet()} ><img src={disconnectWalletImg} /></a>
-              {/*<a className="btn btn-black btn-connect" style={{ marginTop: "150px" }} onClick={() => connectWallet()}><img src={disconnectWalletImg} /></a>*/}
             </>
           )
         }
