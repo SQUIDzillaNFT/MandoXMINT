@@ -1,4 +1,4 @@
-import './App.css';
+﻿import './App.css';
 import 'font-awesome/css/font-awesome.min.css';
 import logo from './images/Cyborx Logo.png';
 import videoSrc from './images/Cyborx Background.mp4';
@@ -210,7 +210,7 @@ function MainComponent() {
         {
           !isStarted && (
             <div className="count-down">
-              <Countdown className="mt-5" date={new Date("2022-03-07T17:00:00+0000")} renderer={renderer} />
+              <Countdown className="mt-5" date={new Date("2022-03-19T17:00:00+0000")} renderer={renderer} />
             </div>
           )
         }
