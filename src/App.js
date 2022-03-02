@@ -7,6 +7,7 @@ import connectWalletImg from "./images/Connect Wallet.png"
 import disconnectWalletImg from "./images/Disconnect.png"
 import mintImg from "./images/Mint.png"
 import whiteListImg from "./images/Whitelist Sale.png"
+import footer from "./images/footer.png"
 import React, { useState, useEffect } from "react";
 
 import axios from 'axios';
@@ -241,7 +242,7 @@ function MainComponent() {
       </div>
 
       <div className="content">
-        <h5>Make sure you are connected to right network(ETHEREUM)<br/> PLEASE NOTE: ALL Minting Sales are FINAL!</h5>
+        <img src={footer} />
       </div>
     </div>
   );

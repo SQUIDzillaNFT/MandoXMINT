@@ -353,9 +353,12 @@ input:disabled{
   .connected {
     top: 50%;
   }
+  .content img {
+    width: 300px !important;
+  }
 }
 
-@media only screen and (max-width: 850px) {
+@media only screen and (min-width: 600px) and (max-width: 850px) {
   #myVideo {
     position: absolute;
     top: 0;
@@ -373,9 +376,12 @@ input:disabled{
   .cyborx-img {
     display: none;
   }
+  .content img {
+    width: 400px !important;
+  }
 }
 
-@media only screen and (max-width: 1280px) {
+@media only screen and (min-width: 850px) and (max-width: 1280px) {
   #myVideo {
     position: absolute;
     top: 0;
@@ -386,6 +392,9 @@ input:disabled{
   }
   .cyborx-img {
 	width: 400px !important;
+  }
+  .content img {
+    width: 500px !important;
   }
 }
 
@@ -459,6 +468,10 @@ input:disabled{
   bottom: 0;
   color: #f1f1f1;
   width: 100%;
+}
+
+.content img {
+  width: 600px;
 }
 
 .whitelist-img {
