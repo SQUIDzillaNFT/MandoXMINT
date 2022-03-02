@@ -465,13 +465,13 @@ input:disabled{
 /* Add some content at the bottom of the video/page */
 .content {
   position: fixed;
-  bottom: 0;
+  bottom: 20px;
   color: #f1f1f1;
   width: 100%;
 }
 
 .content img {
-  width: 600px;
+  width: 550px;
 }
 
 .whitelist-img {
