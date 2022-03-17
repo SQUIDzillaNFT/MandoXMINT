@@ -2218,13 +2218,13 @@ abstract contract Ownable is Context {
     }
 }
 
-// File: contracts/Cyborx.sol
+// File: contracts/TheCyborx.sol
 
 /**
- * @title Cyborx contract
+ * @title TheCyborx contract
  * @dev Extends ERC721 Non-Fungible Token Standard basic implementation
  */
-contract Cyborx is ERC721, Ownable {
+contract TheCyborx is ERC721, Ownable {
     using SafeMath for uint256;
     using Strings for uint256;
 
@@ -2232,8 +2232,8 @@ contract Cyborx is ERC721, Ownable {
     uint256 public startingIndex;
     uint256 public privateMintPrice = 0.08 ether;
     uint256 public publicMintPrice = 0.09 ether;
-    uint256 public maxToMint = 10;
-    uint256 public MAX_MINT_WHITELIST = 10;
+    uint256 public maxToMint = 20;
+    uint256 public MAX_MINT_WHITELIST = 5;
     uint256 public MAX_ELEMENTS = 1000;
     uint256 public REVEAL_TIMESTAMP;
 
@@ -2414,9 +2414,9 @@ contract Cyborx is ERC721, Ownable {
                 .add(_count);
         } else {
             if (isWhitelisted(msg.sender)) {
-                require((balanceOf(msg.sender) - whitelist[msg.sender].hasMinted + _count) <= maxToMint, "Can only mint 5 tokens");
+                require((balanceOf(msg.sender) - whitelist[msg.sender].hasMinted + _count) <= maxToMint, "Can only mint 20 tokens");
             } else {
-                require((balanceOf(msg.sender) + _count) <= maxToMint, "Can only mint 5 tokens");
+                require((balanceOf(msg.sender) + _count) <= maxToMint, "Can only mint 20 tokens");
             }
             require(
                 (publicMintPrice * _count) <= msg.value,

@@ -40,6 +40,7 @@ function MainComponent() {
   const [walletConnected, setWalletConnected] = useState(false);
   const [web3, setWeb3] = useState(null);
   const [walletAddress, setWalletAddress] = useState(null);
+  const [maxMintCount, setMaxMintCount] = useState(5);
   useEffect(() => {
     const _onboard = initOnboard({
       address: (address) => {
@@ -151,8 +152,10 @@ function MainComponent() {
       const privateSale = await contract.privateSaleIsActive();
       let mintPrice = 0;
       if (privateSale) {
+        setMaxMintCount(5);
         mintPrice = await contract.privateMintPrice();
       } else {
+        setMaxMintCount(20);
         mintPrice = await contract.publicMintPrice();
       }
       const price = Number(mintPrice) * numberofTokens;
@@ -229,7 +232,7 @@ function MainComponent() {
                 <div className="qty">
                   <span className="minus bg-dark" onClick={(e) => setMintCount(mintCount > 1 ? mintCount - 1 : 1)}>-</span>
                   <input type="number" className="count" name="qty" value={mintCount} disabled />
-                  <span className="plus bg-dark" onClick={(e) => setMintCount(mintCount < 10 ? mintCount + 1 : 10)}>+</span>
+                  <span className="plus bg-dark" onClick={(e) => setMintCount(mintCount < maxMintCount ? mintCount + 1 : maxMintCount)}>+</span>
                 </div>
               </div>
               <div className="mt-3">
