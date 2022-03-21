@@ -166,8 +166,8 @@ function MainComponent() {
         await estimateGas().then(function (res) {
           gas = res;
         });
-        await contract.mint(numberofTokens, { from: walletAddress, value: String(price) }).then((result) => {
-          // await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
+        //await contract.mint(numberofTokens, { from: walletAddress, value: String(price) }).then((result) => {
+        await contract.mint(numberofTokens, { from: walletAddress, value: String(price), gasPrice: ethers.utils.parseUnits(String(gas), 'gwei') }).then((result) => {
           console.log(result);
           setTotalSupply(totalSupply + numberofTokens);
           setMintCount(1);
